@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1b1f24">
+<title>Códigos de Pesagem</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pesagem">
+<style>
+  :root{
+    --bg: #eef0f2;
+    --surface: #ffffff;
+    --ink: #1b1f24;
+    --ink-sec: #5b6470;
+    --line: #dde1e6;
+    --accent: #ff6b1a;
+    --accent-dark: #d4550a;
+    --display-bg: #1b1f24;
+    --display-fg: #ffb066;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:32px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:var(--bg);
+    padding:16px 16px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:baseline; gap:8px;
+    max-width:720px; margin:0 auto 12px;
+  }
+  .brand .mark{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700; font-size:13px; letter-spacing:.08em;
+    color:var(--accent-dark); background:#ffe4cf;
+    padding:3px 8px; border-radius:6px;
+  }
+  .brand h1{
+    font-size:19px; font-weight:700; letter-spacing:-.01em;
+  }
+
+  .search-wrap{ max-width:720px; margin:0 auto; position:relative; }
+  #searchInput{
+    width:100%;
+    padding:15px 46px 15px 18px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--surface);
+    font-size:16px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+  }
+  #searchInput:focus{ border-color:var(--accent); }
+  .search-wrap svg{
+    position:absolute; right:16px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; stroke:var(--ink-sec);
+  }
+
+  .filters{
+    max-width:720px; margin:12px auto 0;
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:2px;
+    scrollbar-width:none;
+  }
+  .filters::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex:0 0 auto;
+    padding:7px 14px;
+    border-radius:20px;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-sec);
+    font-size:13px; font-weight:600;
+    cursor:pointer; white-space:nowrap;
+    transition:all .15s;
+  }
+  .chip.active{
+    background:var(--ink); border-color:var(--ink); color:#fff;
+  }
+
+  /* ---------- Results ---------- */
+  main{ max-width:720px; margin:18px auto 0; padding:0 16px; }
+
+  .count-row{
+    display:flex; justify-content:space-between; align-items:center;
+    color:var(--ink-sec); font-size:12.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.04em;
+    margin-bottom:10px; padding:0 2px;
+  }
+
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    margin-bottom:10px;
+  }
+  .card-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:12px; margin-bottom:12px;
+  }
+  .card-titles{ min-width:0; }
+  .card-produto{
+    font-size:15.5px; font-weight:700; color:var(--ink);
+    line-height:1.3;
+  }
+  .card-sub{
+    display:flex; gap:6px; align-items:center;
+    margin-top:3px; flex-wrap:wrap;
+  }
+  .card-marca{ font-size:13px; color:var(--ink-sec); font-weight:600; }
+  .card-cat{
+    font-size:10.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.04em; color:var(--accent-dark);
+    background:#ffe4cf; padding:2px 7px; border-radius:6px;
+  }
+
+  .display-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(90px,1fr));
+    gap:8px;
+  }
+  .digit-slot{
+    background:var(--display-bg);
+    border-radius:9px;
+    padding:8px 10px;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    position:relative;
+    transition:transform .1s;
+  }
+  .digit-slot:active{ transform:scale(0.96); }
+  .digit-slot.empty{
+    background:#f2f3f5; opacity:.55; cursor:default;
+  }
+  .digit-slot.empty:active{ transform:none; }
+  .digit-label{
+    font-size:9.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; color:#9aa2ac; margin-bottom:2px;
+  }
+  .digit-slot.empty .digit-label{ color:#b7bcc2; }
+  .digit-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:19px; font-weight:600;
+    color:var(--display-fg);
+    letter-spacing:.03em;
+  }
+  .digit-slot.empty .digit-value{ color:#c3c7cc; font-size:16px; }
+  .copied-flag{
+    position:absolute; inset:0;
+    background:var(--accent);
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; font-weight:700; color:#fff;
+    opacity:0; pointer-events:none;
+    transition:opacity .15s;
+  }
+  .digit-slot.flash .copied-flag{ opacity:1; }
+
+  /* ---------- Empty / error states ---------- */
+  .state{
+    text-align:center; padding:64px 24px;
+    color:var(--ink-sec);
+  }
+  .state .glyph{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px; font-weight:700; letter-spacing:.1em;
+    color:var(--accent-dark); margin-bottom:10px;
+    text-transform:uppercase;
+  }
+  .state p{ font-size:14.5px; line-height:1.5; max-width:360px; margin:0 auto; }
+  .state code{
+    font-family:'IBM Plex Mono', monospace;
+    background:var(--surface); border:1px solid var(--line);
+    padding:1px 6px; border-radius:5px; font-size:13px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="mark">PESAGEM</span>
+    <h1>Códigos de Pesagem</h1>
+  </div>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Produto, marca ou código..." autocomplete="off">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </div>
+  <div class="filters" id="filters"><!-- chips de categoria injetados via JS --></div>
+</header>
+
+<main>
+  <div class="count-row" id="countRow" style="display:none">
+    <span id="countText"></span>
+  </div>
+  <div id="results"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+  const CSV_PATH = 'Dados.csv';
+  let allItems = [];
+  let activeCategory = 'Todos';
+
+  const resultsEl   = document.getElementById('results');
+  const filtersEl   = document.getElementById('filters');
+  const countRowEl  = document.getElementById('countRow');
+  const countTextEl = document.getElementById('countText');
+  const searchInput = document.getElementById('searchInput');
+
+  function normalize(str){
+    return (str || '')
+      .toString()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase().trim();
+  }
+
+  function showState(glyph, html){
+    resultsEl.innerHTML = `
+      <div class="state">
+        <div class="glyph">${glyph}</div>
+        <p>${html}</p>
+      </div>`;
+    countRowEl.style.display = 'none';
+  }
+
+  function loadData(){
+    showState('Carregando', 'Buscando a biblioteca de códigos...');
+    Papa.parse(CSV_PATH, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: (h) => normalize(h).replace(/[^a-z0-9]/g, ''),
+      transform: (v) => (v || '').trim(),
+      complete: (res) => {
+        allItems = res.data
+          .map((row, i) => ({
+            id: i,
+            categoria: row.categoria || '',
+            fornecedor: row.fornecedor || row.marca || '',
+            produto: row.produto || '',
+            kg: row.kg || '',
+            fatiado: row.fatiado || '',
+            peca: row.peca || row.peça || '',
+          }))
+          .filter(item => item.produto || item.fornecedor);
+
+        if(allItems.length === 0){
+          showState('Biblioteca vazia', 'O arquivo <code>Dados.csv</code> foi encontrado, mas não tem linhas válidas. Confira as colunas: <code>categoria, fornecedor, produto, kg, fatiado, peca</code>.');
+          return;
+        }
+        buildFilters();
+        renderResults('');
+      },
+      error: () => {
+        showState('Não encontrado', 'Não achei o arquivo <code>Dados.csv</code> na mesma pasta do index.html. Adicione-o ao repositório e recarregue a página.');
+      }
+    });
+  }
+
+  function buildFilters(){
+    const cats = ['Todos', ...new Set(allItems.map(i => i.categoria).filter(Boolean))];
+    filtersEl.innerHTML = cats.map(c =>
+      `<button class="chip${c==='Todos' ? ' active':''}" data-cat="${c}">${c}</button>`
+    ).join('');
+    filtersEl.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        filtersEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeCategory = chip.dataset.cat;
+        renderResults(searchInput.value);
+      });
+    });
+  }
+
+  function matches(item, term){
+    if(!term) return true;
+    const t = normalize(term);
+    return normalize(item.produto).includes(t)
+        || normalize(item.fornecedor).includes(t)
+        || normalize(item.categoria).includes(t)
+        || item.kg.includes(term)
+        || item.fatiado.includes(term)
+        || item.peca.includes(term);
+  }
+
+  function renderResults(term){
+    let filtered = allItems.filter(i => matches(i, term));
+    if(activeCategory !== 'Todos'){
+      filtered = filtered.filter(i => i.categoria === activeCategory);
+    }
+
+    if(filtered.length === 0){
+      showState('Sem resultados', `Nada encontrado para <code>${term || activeCategory}</code>. Tente outro nome, marca ou código.`);
+      return;
+    }
+
+    countRowEl.style.display = 'flex';
+    countTextEl.textContent = `${filtered.length} ${filtered.length === 1 ? 'resultado' : 'resultados'}`;
+
+    resultsEl.innerHTML = filtered.map(item => `
+      <div class="card">
+        <div class="card-top">
+          <div class="card-titles">
+            <div class="card-produto">${item.produto}</div>
+            <div class="card-sub">
+              <span class="card-marca">${item.fornecedor}</span>
+              ${item.categoria ? `<span class="card-cat">${item.categoria}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="display-row">
+          ${slot('KG', item.kg)}
+          ${slot('Fatiado', item.fatiado)}
+          ${slot('Peça', item.peca)}
+        </div>
+      </div>
+    `).join('');
+
+    resultsEl.querySelectorAll('.digit-slot[data-code]').forEach(el => {
+      el.addEventListener('click', () => copyCode(el));
+    });
+  }
+
+  function slot(label, value){
+    if(!value){
+      return `<div class="digit-slot empty">
+        <div class="digit-label">${label}</div>
+        <div class="digit-value">—</div>
+      </div>`;
+    }
+    return `<div class="digit-slot" data-code="${value}">
+      <div class="digit-label">${label}</div>
+      <div class="digit-value">${value}</div>
+      <div class="copied-flag">Copiado</div>
+    </div>`;
+  }
+
+  function copyCode(el){
+    const code = el.dataset.code;
+    const done = () => {
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 700);
+    };
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(code).then(done).catch(done);
+    } else {
+      done();
+    }
+  }
+
+  searchInput.addEventListener('input', (e) => renderResults(e.target.value));
+
+  loadData();
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
