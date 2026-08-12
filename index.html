@@ -23,6 +23,7 @@
     --display-bg: #1b1f24;
     --display-fg: #ffb066;
     --radius: 14px;
+    --danger: #c9372c;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{height:100%;}
@@ -42,7 +43,7 @@
     border-bottom:1px solid var(--line);
   }
   .brand{
-    display:flex; align-items:baseline; gap:8px;
+    display:flex; align-items:center; gap:8px;
     max-width:720px; margin:0 auto 12px;
   }
   .brand .mark{
@@ -53,7 +54,18 @@
   }
   .brand h1{
     font-size:19px; font-weight:700; letter-spacing:-.01em;
+    flex:1;
   }
+  .lock-btn{
+    width:38px; height:38px; border-radius:10px;
+    border:1.5px solid var(--line); background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex:0 0 auto;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lock-btn svg{ width:17px; height:17px; stroke:var(--ink-sec); }
+  .lock-btn.unlocked{ background:var(--ink); border-color:var(--ink); }
+  .lock-btn.unlocked svg{ stroke:var(--display-fg); }
 
   .search-wrap{ max-width:720px; margin:0 auto; position:relative; }
   #searchInput{
@@ -103,6 +115,9 @@
     text-transform:uppercase; letter-spacing:.04em;
     margin-bottom:10px; padding:0 2px;
   }
+  .count-row .edit-hint{
+    color:var(--accent-dark); font-weight:700;
+  }
 
   .card{
     background:var(--surface);
@@ -130,6 +145,15 @@
     letter-spacing:.04em; color:var(--accent-dark);
     background:#ffe4cf; padding:2px 7px; border-radius:6px;
   }
+  .card-actions{ display:flex; gap:6px; flex:0 0 auto; }
+  .icon-btn{
+    width:32px; height:32px; border-radius:8px;
+    border:1.5px solid var(--line); background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .icon-btn svg{ width:15px; height:15px; stroke:var(--ink-sec); }
+  .icon-btn.danger svg{ stroke:var(--danger); }
 
   .display-row{
     display:grid;
@@ -192,6 +216,63 @@
     padding:1px 6px; border-radius:5px; font-size:13px;
   }
 
+  /* ---------- FAB ---------- */
+  .fab{
+    position:fixed; bottom:24px; right:20px;
+    width:56px; height:56px; border-radius:16px;
+    background:var(--ink); color:var(--display-fg);
+    border:none; font-size:28px; line-height:1;
+    box-shadow:0 6px 16px rgba(27,31,36,0.35);
+    display:none; align-items:center; justify-content:center;
+    cursor:pointer; z-index:15;
+  }
+  .fab.visible{ display:flex; }
+
+  /* ---------- Dialogs ---------- */
+  dialog{
+    margin:auto; border:none; border-radius:18px;
+    padding:22px; width:90%; max-width:400px;
+    background:var(--surface);
+    box-shadow:0 12px 30px rgba(0,0,0,0.25);
+  }
+  dialog::backdrop{ background:rgba(15,17,20,0.55); }
+  .modal-title{ font-size:17px; font-weight:700; margin-bottom:6px; }
+  .modal-hint{ font-size:12.5px; color:var(--ink-sec); line-height:1.5; margin-bottom:16px; }
+  .field{ margin-bottom:12px; }
+  .field label{
+    display:block; font-size:12px; font-weight:700; color:var(--ink-sec);
+    text-transform:uppercase; letter-spacing:.03em; margin-bottom:5px;
+  }
+  .field input{
+    width:100%; padding:11px 13px; border:1.5px solid var(--line);
+    border-radius:9px; font-size:15px; outline:none; font-family:inherit;
+  }
+  .field input:focus{ border-color:var(--accent); }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .modal-actions{
+    display:flex; justify-content:flex-end; gap:10px; margin-top:18px;
+  }
+  .btn{
+    padding:10px 18px; border-radius:10px; border:none;
+    font-size:14px; font-weight:700; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn-cancel{ background:var(--bg); color:var(--ink-sec); }
+  .btn-primary{ background:var(--ink); color:var(--display-fg); }
+  .btn-primary:disabled{ opacity:.5; }
+
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%,120%);
+    background:var(--ink); color:#fff; padding:12px 20px;
+    border-radius:12px; font-size:13.5px; font-weight:600;
+    max-width:90%; text-align:center; z-index:60;
+    transition:transform .25s;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  }
+  #toast.show{ transform:translate(-50%,0); }
+  #toast.error{ background:var(--danger); }
+
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; }
   }
@@ -203,6 +284,12 @@
   <div class="brand">
     <span class="mark">PESAGEM</span>
     <h1>Códigos de Pesagem</h1>
+    <button class="lock-btn" id="editToggle" title="Modo edição">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+      </svg>
+    </button>
   </div>
   <div class="search-wrap">
     <input type="text" id="searchInput" placeholder="Produto, marca ou código..." autocomplete="off">
@@ -216,27 +303,130 @@
 <main>
   <div class="count-row" id="countRow" style="display:none">
     <span id="countText"></span>
+    <span class="edit-hint" id="editHint" style="display:none">MODO EDIÇÃO ATIVO</span>
   </div>
   <div id="results"></div>
 </main>
 
+<button class="fab" id="fabAdd">+</button>
+
+<!-- Modal: senha -->
+<dialog id="pwModal">
+  <div class="modal-title">Entrar no modo de edição</div>
+  <div class="modal-hint">Digite a senha para adicionar, editar ou excluir produtos.</div>
+  <div class="field">
+    <label>Senha</label>
+    <input type="password" id="pwInput" autocomplete="off">
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-cancel" id="pwCancel" type="button">Cancelar</button>
+    <button class="btn btn-primary" id="pwConfirm" type="button">Entrar</button>
+  </div>
+</dialog>
+
+<!-- Modal: token GitHub -->
+<dialog id="tokenModal">
+  <div class="modal-title">Token do GitHub</div>
+  <div class="modal-hint">Necessário só neste aparelho, uma vez. Cole abaixo um Personal Access Token com permissão de escrita no repositório. Ele fica salvo apenas neste navegador.</div>
+  <div class="field">
+    <label>Token</label>
+    <input type="password" id="tokenInput" autocomplete="off" placeholder="ghp_...">
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-cancel" id="tokenCancel" type="button">Cancelar</button>
+    <button class="btn btn-primary" id="tokenConfirm" type="button">Salvar</button>
+  </div>
+</dialog>
+
+<!-- Modal: adicionar/editar produto -->
+<dialog id="itemModal">
+  <div class="modal-title" id="itemModalTitle">Adicionar produto</div>
+  <form id="itemForm">
+    <div class="field">
+      <label>Categoria</label>
+      <input type="text" id="fCategoria" list="catList" required>
+      <datalist id="catList"></datalist>
+    </div>
+    <div class="field">
+      <label>Fornecedor / marca</label>
+      <input type="text" id="fFornecedor" required>
+    </div>
+    <div class="field">
+      <label>Produto</label>
+      <input type="text" id="fProduto" required>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>KG</label>
+        <input type="text" id="fKg" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>Fatiado</label>
+        <input type="text" id="fFatiado" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>Peça</label>
+        <input type="text" id="fPeca" inputmode="numeric">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="itemCancel" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="itemSave" type="submit">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast"></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
   const CSV_PATH = 'Dados.csv';
+
+  // --- GitHub ---
+  const GH_OWNER  = 'Pinps25';
+  const GH_REPO   = 'KG';
+  const GH_BRANCH = 'main';
+  const GH_FILE   = 'Dados.csv';
+  const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+  const PASSWORD_HASH = 'd84b0644417155b3928978d8aba45c401c73b436b8bddc08b24321d1ab3aed76';
+
   let allItems = [];
   let activeCategory = 'Todos';
+  let editMode = false;
+  let editingSnapshot = null; // item original sendo editado (para localizar no CSV)
 
-  const resultsEl   = document.getElementById('results');
-  const filtersEl   = document.getElementById('filters');
-  const countRowEl  = document.getElementById('countRow');
-  const countTextEl = document.getElementById('countText');
-  const searchInput = document.getElementById('searchInput');
+  const resultsEl    = document.getElementById('results');
+  const filtersEl    = document.getElementById('filters');
+  const countRowEl   = document.getElementById('countRow');
+  const countTextEl  = document.getElementById('countText');
+  const editHintEl   = document.getElementById('editHint');
+  const searchInput  = document.getElementById('searchInput');
+  const editToggle   = document.getElementById('editToggle');
+  const fabAdd       = document.getElementById('fabAdd');
+  const toastEl      = document.getElementById('toast');
+
+  const pwModal      = document.getElementById('pwModal');
+  const pwInput      = document.getElementById('pwInput');
+  const tokenModal   = document.getElementById('tokenModal');
+  const tokenInput   = document.getElementById('tokenInput');
+  const itemModal    = document.getElementById('itemModal');
+  const itemForm     = document.getElementById('itemForm');
+  const itemModalTitle = document.getElementById('itemModalTitle');
+  const catList      = document.getElementById('catList');
 
   function normalize(str){
     return (str || '')
       .toString()
       .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .toLowerCase().trim();
+  }
+
+  function showToast(msg, isError){
+    toastEl.textContent = msg;
+    toastEl.classList.toggle('error', !!isError);
+    toastEl.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toastEl.classList.remove('show'), 3200);
   }
 
   function showState(glyph, html){
@@ -250,7 +440,7 @@
 
   function loadData(){
     showState('Carregando', 'Buscando a biblioteca de códigos...');
-    Papa.parse(CSV_PATH, {
+    Papa.parse(CSV_PATH + '?t=' + Date.now(), {
       download: true,
       header: true,
       skipEmptyLines: true,
@@ -274,7 +464,7 @@
           return;
         }
         buildFilters();
-        renderResults('');
+        renderResults(searchInput.value);
       },
       error: () => {
         showState('Não encontrado', 'Não achei o arquivo <code>Dados.csv</code> na mesma pasta do index.html. Adicione-o ao repositório e recarregue a página.');
@@ -285,7 +475,7 @@
   function buildFilters(){
     const cats = ['Todos', ...new Set(allItems.map(i => i.categoria).filter(Boolean))];
     filtersEl.innerHTML = cats.map(c =>
-      `<button class="chip${c==='Todos' ? ' active':''}" data-cat="${c}">${c}</button>`
+      `<button class="chip${c===activeCategory ? ' active':''}" data-cat="${c}">${c}</button>`
     ).join('');
     filtersEl.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
@@ -295,6 +485,8 @@
         renderResults(searchInput.value);
       });
     });
+    catList.innerHTML = [...new Set(allItems.map(i => i.categoria).filter(Boolean))]
+      .map(c => `<option value="${c}"></option>`).join('');
   }
 
   function matches(item, term){
@@ -314,6 +506,8 @@
       filtered = filtered.filter(i => i.categoria === activeCategory);
     }
 
+    editHintEl.style.display = editMode ? 'inline' : 'none';
+
     if(filtered.length === 0){
       showState('Sem resultados', `Nada encontrado para <code>${term || activeCategory}</code>. Tente outro nome, marca ou código.`);
       return;
@@ -332,6 +526,15 @@
               ${item.categoria ? `<span class="card-cat">${item.categoria}</span>` : ''}
             </div>
           </div>
+          ${editMode ? `
+          <div class="card-actions">
+            <button class="icon-btn" data-edit="${item.id}" title="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+            </button>
+            <button class="icon-btn danger" data-delete="${item.id}" title="Excluir">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+            </button>
+          </div>` : ''}
         </div>
         <div class="display-row">
           ${slot('KG', item.kg)}
@@ -343,6 +546,12 @@
 
     resultsEl.querySelectorAll('.digit-slot[data-code]').forEach(el => {
       el.addEventListener('click', () => copyCode(el));
+    });
+    resultsEl.querySelectorAll('[data-edit]').forEach(el => {
+      el.addEventListener('click', () => openEditModal(Number(el.dataset.edit)));
+    });
+    resultsEl.querySelectorAll('[data-delete]').forEach(el => {
+      el.addEventListener('click', () => confirmDelete(Number(el.dataset.delete)));
     });
   }
 
@@ -374,6 +583,198 @@
   }
 
   searchInput.addEventListener('input', (e) => renderResults(e.target.value));
+
+  // ---------------- Modo de edição ----------------
+  async function sha256Hex(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  editToggle.addEventListener('click', () => {
+    if(editMode){
+      editMode = false;
+      editToggle.classList.remove('unlocked');
+      fabAdd.classList.remove('visible');
+      renderResults(searchInput.value);
+      return;
+    }
+    pwInput.value = '';
+    pwModal.showModal();
+    pwInput.focus();
+  });
+
+  document.getElementById('pwCancel').addEventListener('click', () => pwModal.close());
+  document.getElementById('pwConfirm').addEventListener('click', async () => {
+    const hash = await sha256Hex(pwInput.value);
+    if(hash === PASSWORD_HASH){
+      pwModal.close();
+      unlockEditMode();
+    } else {
+      showToast('Senha incorreta.', true);
+    }
+  });
+  pwInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('pwConfirm').click(); }
+  });
+
+  function unlockEditMode(){
+    editMode = true;
+    editToggle.classList.add('unlocked');
+    fabAdd.classList.add('visible');
+    renderResults(searchInput.value);
+    if(!localStorage.getItem('gh_pat')){
+      tokenInput.value = '';
+      tokenModal.showModal();
+      tokenInput.focus();
+    }
+  }
+
+  document.getElementById('tokenCancel').addEventListener('click', () => tokenModal.close());
+  document.getElementById('tokenConfirm').addEventListener('click', () => {
+    const val = tokenInput.value.trim();
+    if(!val){ showToast('Cole um token válido.', true); return; }
+    localStorage.setItem('gh_pat', val);
+    tokenModal.close();
+    showToast('Token salvo neste aparelho.');
+  });
+
+  // ---------------- Modal de item (add/editar) ----------------
+  fabAdd.addEventListener('click', () => openAddModal());
+
+  function openAddModal(){
+    editingSnapshot = null;
+    itemModalTitle.textContent = 'Adicionar produto';
+    itemForm.reset();
+    itemModal.showModal();
+  }
+
+  function openEditModal(id){
+    const item = allItems.find(i => i.id === id);
+    if(!item) return;
+    editingSnapshot = { ...item };
+    itemModalTitle.textContent = 'Editar produto';
+    document.getElementById('fCategoria').value = item.categoria;
+    document.getElementById('fFornecedor').value = item.fornecedor;
+    document.getElementById('fProduto').value = item.produto;
+    document.getElementById('fKg').value = item.kg;
+    document.getElementById('fFatiado').value = item.fatiado;
+    document.getElementById('fPeca').value = item.peca;
+    itemModal.showModal();
+  }
+
+  document.getElementById('itemCancel').addEventListener('click', () => itemModal.close());
+
+  itemForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newItem = {
+      categoria: document.getElementById('fCategoria').value.trim(),
+      fornecedor: document.getElementById('fFornecedor').value.trim(),
+      produto: document.getElementById('fProduto').value.trim(),
+      kg: document.getElementById('fKg').value.trim(),
+      fatiado: document.getElementById('fFatiado').value.trim(),
+      peca: document.getElementById('fPeca').value.trim(),
+    };
+    const action = editingSnapshot
+      ? { type: 'edit', original: editingSnapshot, updated: newItem }
+      : { type: 'add', item: newItem };
+    saveToGithub(action);
+  });
+
+  function confirmDelete(id){
+    const item = allItems.find(i => i.id === id);
+    if(!item) return;
+    if(!confirm(`Excluir "${item.produto}" (${item.fornecedor})?`)) return;
+    saveToGithub({ type: 'delete', original: item });
+  }
+
+  // ---------------- Persistência via API do GitHub ----------------
+  function rowsMatch(a, b){
+    return a.categoria === b.categoria && a.fornecedor === b.fornecedor &&
+           a.produto === b.produto && a.kg === b.kg &&
+           a.fatiado === b.fatiado && a.peca === b.peca;
+  }
+
+  function utf8ToBase64(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function base64ToUtf8(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,'')))); }
+
+  async function saveToGithub(action){
+    const token = localStorage.getItem('gh_pat');
+    if(!token){
+      showToast('Nenhum token salvo. Toque no cadeado para configurar.', true);
+      return;
+    }
+    const saveBtn = document.getElementById('itemSave');
+    if(saveBtn) saveBtn.disabled = true;
+    showToast('Salvando no GitHub...');
+
+    try{
+      const getRes = await fetch(GH_API + `?ref=${GH_BRANCH}`, {
+        headers:{ 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+      if(getRes.status === 401){ throw new Error('Token inválido ou sem permissão de escrita.'); }
+      if(getRes.status === 404){ throw new Error('Repositório ou arquivo não encontrado. Confira usuário e nome do repositório.'); }
+      if(!getRes.ok){ throw new Error('Não consegui ler o arquivo atual no GitHub.'); }
+      const fileData = await getRes.json();
+      const currentText = base64ToUtf8(fileData.content);
+
+      const parsed = Papa.parse(currentText, {
+        header: true, skipEmptyLines: true,
+        transformHeader: (h) => normalize(h).replace(/[^a-z0-9]/g, ''),
+        transform: (v) => (v || '').trim(),
+      });
+      let rows = parsed.data.map(r => ({
+        categoria: r.categoria || '', fornecedor: r.fornecedor || '',
+        produto: r.produto || '', kg: r.kg || '', fatiado: r.fatiado || '', peca: r.peca || r.peça || '',
+      }));
+
+      let message = '';
+      if(action.type === 'add'){
+        rows.push(action.item);
+        message = `Adiciona ${action.item.produto} (${action.item.fornecedor})`;
+      } else if(action.type === 'edit'){
+        const idx = rows.findIndex(r => rowsMatch(r, action.original));
+        if(idx === -1){ throw new Error('Esse item não foi encontrado no arquivo mais recente. Recarregue a página e tente de novo.'); }
+        rows[idx] = action.updated;
+        message = `Edita ${action.updated.produto} (${action.updated.fornecedor})`;
+      } else if(action.type === 'delete'){
+        const idx = rows.findIndex(r => rowsMatch(r, action.original));
+        if(idx === -1){ throw new Error('Esse item não foi encontrado no arquivo mais recente. Recarregue a página e tente de novo.'); }
+        rows.splice(idx, 1);
+        message = `Remove ${action.original.produto} (${action.original.fornecedor})`;
+      }
+
+      const newCsv = Papa.unparse(rows, { columns: ['categoria','fornecedor','produto','kg','fatiado','peca'] });
+
+      const putRes = await fetch(GH_API, {
+        method: 'PUT',
+        headers:{
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message,
+          content: utf8ToBase64(newCsv),
+          sha: fileData.sha,
+          branch: GH_BRANCH
+        })
+      });
+      if(putRes.status === 401){ throw new Error('Token inválido ou sem permissão de escrita.'); }
+      if(putRes.status === 409){ throw new Error('O arquivo mudou nesse meio-tempo. Tente novamente.'); }
+      if(!putRes.ok){ throw new Error('O GitHub recusou a alteração.'); }
+
+      allItems = rows.map((r, i) => ({ id: i, ...r }));
+      buildFilters();
+      renderResults(searchInput.value);
+      itemModal.close();
+      showToast('Salvo no GitHub.');
+    } catch(err){
+      showToast(err.message || 'Erro ao salvar.', true);
+    } finally {
+      if(saveBtn) saveBtn.disabled = false;
+    }
+  }
 
   loadData();
 
