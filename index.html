@@ -166,6 +166,8 @@
     padding:8px 10px;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
     position:relative;
     transition:transform .1s;
   }
@@ -455,6 +457,12 @@
       .toLowerCase().trim();
   }
 
+  function escapeHtml(str){
+    return (str || '').toString()
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function showToast(msg, isError){
     toastEl.textContent = msg;
     toastEl.classList.toggle('error', !!isError);
@@ -474,7 +482,7 @@
 
   function loadData(){
     showState('Carregando', 'Buscando a biblioteca de códigos...');
-    Papa.parse(CSV_PATH + '?t=' + Date.now(), {
+    Papa.parse(CSV_PATH, {
       download: true,
       header: true,
       skipEmptyLines: true,
@@ -509,7 +517,7 @@
   function buildFilters(){
     const cats = ['Todos', ...new Set(allItems.map(i => i.categoria).filter(Boolean))];
     filtersEl.innerHTML = cats.map(c =>
-      `<button class="chip${c===activeCategory ? ' active':''}" data-cat="${c}">${c}</button>`
+      `<button class="chip${c===activeCategory ? ' active':''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
     ).join('');
     filtersEl.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
@@ -554,10 +562,10 @@
       <div class="card">
         <div class="card-top">
           <div class="card-titles">
-            <div class="card-produto">${item.produto}</div>
+            <div class="card-produto">${escapeHtml(item.produto)}</div>
             <div class="card-sub">
-              <span class="card-marca">${item.fornecedor}</span>
-              ${item.categoria ? `<span class="card-cat">${item.categoria}</span>` : ''}
+              <span class="card-marca">${escapeHtml(item.fornecedor)}</span>
+              ${item.categoria ? `<span class="card-cat">${escapeHtml(item.categoria)}</span>` : ''}
             </div>
           </div>
           ${editMode ? `
@@ -596,9 +604,9 @@
         <div class="digit-value">—</div>
       </div>`;
     }
-    return `<div class="digit-slot" data-code="${value}">
+    return `<div class="digit-slot" data-code="${escapeHtml(value)}">
       <div class="digit-label">${label}</div>
-      <div class="digit-value">${value}</div>
+      <div class="digit-value">${escapeHtml(value)}</div>
       <div class="copied-flag">Copiado</div>
     </div>`;
   }
@@ -618,7 +626,7 @@
 
   // ---------------- Toque curto = copia · Pressionar e segurar = código de barras ----------------
   const LONG_PRESS_MS = 450;
-  const MOVE_TOLERANCE = 10;
+  const MOVE_TOLERANCE = 14;
 
   function attachSlotHandlers(el){
     let pressTimer = null;
@@ -680,7 +688,7 @@
     barcodeBaseCode = code;
     milContraOn = false;
     renderBarcode();
-    barcodeModal.showModal();
+    if(!barcodeModal.open) barcodeModal.showModal();
   }
 
   milContraBtn.addEventListener('click', () => {
@@ -712,7 +720,7 @@
       return;
     }
     pwInput.value = '';
-    pwModal.showModal();
+    if(!pwModal.open) pwModal.showModal();
     pwInput.focus();
   });
 
@@ -737,7 +745,7 @@
     renderResults(searchInput.value);
     if(!localStorage.getItem('gh_pat')){
       tokenInput.value = '';
-      tokenModal.showModal();
+      if(!tokenModal.open) tokenModal.showModal();
       tokenInput.focus();
     }
   }
@@ -758,7 +766,7 @@
     editingSnapshot = null;
     itemModalTitle.textContent = 'Adicionar produto';
     itemForm.reset();
-    itemModal.showModal();
+    if(!itemModal.open) itemModal.showModal();
   }
 
   function openEditModal(id){
@@ -772,7 +780,7 @@
     document.getElementById('fKg').value = item.kg;
     document.getElementById('fFatiado').value = item.fatiado;
     document.getElementById('fPeca').value = item.peca;
-    itemModal.showModal();
+    if(!itemModal.open) itemModal.showModal();
   }
 
   document.getElementById('itemCancel').addEventListener('click', () => itemModal.close());
@@ -787,17 +795,60 @@
       fatiado: document.getElementById('fFatiado').value.trim(),
       peca: document.getElementById('fPeca').value.trim(),
     };
+    if(!newItem.kg && !newItem.fatiado && !newItem.peca){
+      showToast('Preencha ao menos um código (KG, Fatiado ou Peça).', true);
+      return;
+    }
     const action = editingSnapshot
       ? { type: 'edit', original: editingSnapshot, updated: newItem }
       : { type: 'add', item: newItem };
-    saveToGithub(action);
+    itemModal.close();
+    queueSave(action);
   });
 
   function confirmDelete(id){
     const item = allItems.find(i => i.id === id);
     if(!item) return;
     if(!confirm(`Excluir "${item.produto}" (${item.fornecedor})?`)) return;
-    saveToGithub({ type: 'delete', original: item });
+    queueSave({ type: 'delete', original: item });
+  }
+
+  // ---------------- Fila de salvamento ----------------
+  // Permite editar/adicionar/excluir vários produtos em sequência, sem
+  // esperar um terminar pra começar o próximo. As ações são processadas
+  // uma de cada vez, na ordem, evitando qualquer conflito de gravação.
+  const saveQueue = [];
+  let queueRunning = false;
+
+  function updateQueueIndicator(){
+    if(saveQueue.length > 0 || queueRunning){
+      editHintEl.style.display = 'inline';
+      const pending = saveQueue.length + (queueRunning ? 1 : 0);
+      editHintEl.textContent = pending > 1
+        ? `SALVANDO... (${pending} PENDENTES)`
+        : 'SALVANDO...';
+    } else {
+      editHintEl.textContent = 'MODO EDIÇÃO ATIVO';
+      editHintEl.style.display = editMode ? 'inline' : 'none';
+    }
+  }
+
+  function queueSave(action){
+    saveQueue.push(action);
+    updateQueueIndicator();
+    processQueue();
+  }
+
+  async function processQueue(){
+    if(queueRunning) return;
+    queueRunning = true;
+    while(saveQueue.length > 0){
+      const action = saveQueue.shift();
+      updateQueueIndicator();
+      await saveToGithub(action);
+    }
+    queueRunning = false;
+    updateQueueIndicator();
   }
 
   // ---------------- Persistência via API do GitHub ----------------
@@ -816,9 +867,6 @@
       showToast('Nenhum token salvo. Toque no cadeado para configurar.', true);
       return;
     }
-    const saveBtn = document.getElementById('itemSave');
-    if(saveBtn) saveBtn.disabled = true;
-    showToast('Salvando no GitHub...');
 
     try{
       const getRes = await fetch(GH_API + `?ref=${GH_BRANCH}`, {
@@ -873,18 +921,41 @@
         })
       });
       if(putRes.status === 401){ throw new Error('Token inválido ou sem permissão de escrita.'); }
-      if(putRes.status === 409){ throw new Error('O arquivo mudou nesse meio-tempo. Tente novamente.'); }
+      if(putRes.status === 409){
+        // outro dispositivo salvou no mesmo instante — tenta mais uma vez automaticamente
+        if(!action._retried){
+          action._retried = true;
+          return saveToGithub(action);
+        }
+        throw new Error('O arquivo mudou nesse meio-tempo. Tente novamente.');
+      }
       if(!putRes.ok){ throw new Error('O GitHub recusou a alteração.'); }
 
       allItems = rows.map((r, i) => ({ id: i, ...r }));
       buildFilters();
       renderResults(searchInput.value);
-      itemModal.close();
-      showToast('Salvo no GitHub.');
+      const nomeAlvo = action.updated?.produto || action.item?.produto || action.original?.produto || '';
+      showToast(`Salvo: ${nomeAlvo}`);
+
+      // Atualiza o cache offline na hora, sem esperar o GitHub Pages publicar
+      if('caches' in window){
+        caches.keys().then(names => {
+          names.filter(n => n.startsWith('pesagem-cache-')).forEach(n => {
+            caches.open(n).then(cache => {
+              cache.put(new Request('Dados.csv'), new Response(newCsv, { headers: { 'Content-Type': 'text/csv' } }));
+            });
+          });
+        }).catch(() => {});
+      }
     } catch(err){
-      showToast(err.message || 'Erro ao salvar.', true);
-    } finally {
-      if(saveBtn) saveBtn.disabled = false;
+      const semConexao = err instanceof TypeError; // fetch falha assim quando não há rede
+      if(semConexao && (action._netRetries || 0) < 3){
+        action._netRetries = (action._netRetries || 0) + 1;
+        showToast(`Sem conexão. Tentando de novo (${action._netRetries}/3)...`, true);
+        await new Promise(r => setTimeout(r, 2500));
+        return saveToGithub(action);
+      }
+      showToast(semConexao ? 'Sem conexão com a internet. Verifique o wi-fi e tente de novo.' : (err.message || 'Erro ao salvar.'), true);
     }
   }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesagem-cache-v4';
+const CACHE_NAME = 'pesagem-cache-v5';
 
 const APP_SHELL = [
   './index.html',
@@ -32,16 +32,19 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
 
-  // Dados.csv: tenta a rede primeiro (pega dados novos), cai pro cache se estiver offline
+  // Dados.csv: tenta a rede primeiro (pega dados novos), cai pro cache se estiver offline.
+  // Usamos a URL sem query string como chave de cache, porque a página adiciona
+  // parâmetros de cache-busting que mudam a cada carregamento.
   if (url.includes('Dados.csv')) {
+    const cacheKey = new Request(url.split('?')[0]);
     event.respondWith(
       fetch(event.request)
         .then((response) => {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, clone));
           return response;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => caches.match(cacheKey))
     );
     return;
   }
