@@ -1,2 +1,316 @@
-categoria ,fornecedor ,produto ,kg,fatiado ,peça 
-MUSSARELA ,AURORA ,Q T MUSS AURORA ,3884,8899,3894
+categoria,fornecedor,produto,kg,fatiado,peca
+Mussarela,Do Vale,Mussarela,1742,1747,4297
+Mussarela,Szura,Mussarela,1771,1773,1776
+Mussarela,Litoral,Mussarela,8716,8723,8754
+Mussarela,Lactopar,Mussarela,2275,2276,825
+Mussarela,Paraíso,Mussarela,1559,1563,1567
+Mussarela,Frizzo,Mussarela,4762,4764,4767
+Mussarela,Heloísa,Mussarela,5210,522,525
+Mussarela,Vitalac,Mussarela,1630,164,807
+Mussarela,Cenaggio,Mussarela,7374,7590,7586
+Mussarela,Ipanema,Mussarela 4kg,5187,5194,5193
+Mussarela,Três Marias,Mussarela,766,767,3611
+Mussarela,4M,Mussarela,488,489,10374
+Mussarela,Tirolez,Mussarela,1784,1785,1787
+Mussarela,Nativille,Mussarela,2346,2469,2467
+Mussarela,President,Mussarela,5726,5728,5733
+Mussarela,Buf Bianco,Mussarela,85,87,89
+Mussarela,Aurora,Mussarela,3884,8899,3894
+Mussarela,Tirolez,Mussarela Zero Lactose,,7159,7162
+Mussarela,Italac,Mussarela,1129,1130,3612
+Mussarela,Piracanjuba,Mussarela,2827,4998,4999
+Mussarela,Mont Castelo,Mussarela,5057,5058,5059
+Mussarela,Buf Bom Dest,Mussarela,5748,5808,1474
+Mussarela,Ipanema,Mussarela T2,3265,,
+Mussarela,Ipanema,Mussarela T500,3130,,
+Mussarela,Ipanema,Mussarela Bolinha,3132,,
+Queijo Prato,Mont Castelo,Queijo Prato,7218,7263,7264
+Queijo Prato,Três Marias,Queijo Prato,898,899,3615
+Queijo Prato,Ipanema,Queijo Prato 4kg,5188,5196,5195
+Queijo Prato,Lactopar,Queijo Prato,4054,4055,4058
+Queijo Prato,Tirolez,Queijo Prato,1790,1791,1792
+Queijo Prato,Aurora,Queijo Prato,,3174,3180
+Queijo Prato,Palark,Queijo Prato,,7103,7102
+Queijo Prato,Quata,Queijo Prato,,5011,5013
+Queijo Prato,Ipanema,Queijo Prato T2,3264,,
+Queijo Prato,Ipanema,Queijo Prato T500,3129,,
+Queijo Prato,Ipanema,Queijo Prato Esférico Peça,6448,,
+Queijo Prato,Ipanema,Queijo Prato Esférico Fracionado,,6337,
+Provolone,Três Marias,Provolone,,6743,6750
+Provolone,Formosa,Provolone T2,,5342,5331
+Provolone,Ipanema,Provolone,,5334,
+Provolone,Santa Marta,Provolone,,1973,1976
+Provolone,Lactopar,Provolone,4952,,5006
+Provolone,Ipanema,Provolone 3kg,5312,,
+Provolone,Ipanema,Provolone Fracionado 700g/300g,5304,,
+Provolone,Ipanema,Provolonete,4172,,
+Provolone,Três Marias,Provolonete 5kg,6668,,
+Provolone,Três Marias,Provolone 300g,6940,,
+Provolone,Três Marias,Provolone,7335,,
+Provolone,Formosa,Provolone Fracionado,6447,,
+Provolone,Formosa,Provolone Fracionado Grande,6997,,
+Provolone,Formosa,Provolone T2,5332,,
+Provolone,Formosa,Provolonete,5550,,
+Provolone,Lactopar,Provolonete,5175,,
+Provolone,Cural de Minas,Provolone,5503,,
+Provolone,Cural de Minas,Provolonete,4975,,
+Provolone,Buritis,Provolone Salaminete,9814,,
+Provolone,Frimesa,Provolone,7014,,
+Provolone,Frimesa,Provolonete,7015,,
+Queijo,Hebrom,Queijo Coalho,7782,,
+Queijo,Hebrom,Queijo Coalho Especial,7782,,
+Queijo,Hebrom,Queijo Mussarela T500,7770,,
+Queijo,Hebrom,Queijo Minas Meia Cura,7772,,
+Queijo,Hebrom,Queijo Minas Padrão,7769,,
+Queijo,Hebrom,Queijo Prato T500,7751,,
+Queijo,Hebrom,Queijo Parmesão Fracionado Pequeno,7749,,
+Queijo,Hebrom,Queijo Parmesão Fracionado Grande,,,7755
+Queijo,Hebrom,Queijo Provolone Fracionado Pequeno,7760,,
+Queijo,Hebrom,Ricota Fresca,7747,,
+Queijo,Hebrom,Ricota Defumada,7748,,
+Queijo,Hebrom,Mineirinho da Serra,7774,,
+Queijo,Relíquia,Queijo Peça,10253,,
+Queijo,Relíquia,Queijo Pedaço,,,10381
+Queijo,Relíquia,Queijo Ralado,10368,,
+Queijo,Relíquia,Queijo Parmesão Black,11234,,
+Queijo,Ipanema,Coalho Espeto,764,,
+Queijo,Ipanema,Coalho Peça,,,5485
+Queijo,Ipanema,Minas Padrão,5167,,
+Queijo,Ipanema,Minas Frescal,3090,,
+Queijo,Ipanema,Ricota,4173,,
+Queijo,Ipanema,Estepe,6095,,
+Queijo,Ipanema,Parmesão Peça,4200,,
+Queijo,Ipanema,Parmesão Fracionado,6896,,
+Queijo,Ipanema,Parmesão Pedaço,,,4201
+Queijo,Ipanema,Montanhês,7802,,
+Queijo,Cural de Minas,Minas Padrão,9518,,
+Queijo,Cural de Minas,Padrão Meia Lua,6614,,
+Queijo,Cural de Minas,Parmesão Fracionado,5004,,
+Queijo,Cural de Minas,Requeijão Barra,11203,,
+Queijo,Cural de Minas,Frescal,8470,,
+Queijo,Buritis,Queijo Azul,1569,,
+Queijo,Buritis,Queijo Coalho,4472,,
+Queijo,Buritis,Queijo Coalho Especial Tradicional,4584,,
+Queijo,Buritis,Queijo Gouda Supremo Fracionado,6877,,
+Queijo,Buritis,Montanhês Santa Marta,1438,,
+Queijo,Buritis,Queijo Reino Fracionado,246,,
+Queijo,Formosa,Parmesão Fracionado,6998,,
+Queijo,Formosa,Coalho Especial,5314,,
+Queijo,Formosa,Minas Frescal Light,5328,,
+Queijo,Formosa,Minas Meia Cura,11235,,
+Queijo,Formosa,Minas Padrão Meia Lua,5506,,
+Queijo,Formosa,Mussarela Bolinha,7120,,
+Queijo,Formosa,Mussarela T1,6334,,
+Queijo,Formosa,Mussarela T2,5329,,
+Queijo,Formosa,Parmesão Baby,7039,,
+Queijo,Formosa,Parmesão Fracionado,,,5324
+Queijo,Formosa,Parmesão,7308,,
+Queijo,Formosa,Prato T2,5325,,
+Queijo,Formosa,Prato T500,5327,,
+Queijo,Formosa,Prato Lanche T1,6336,,
+Queijo,Formosa,Ricota Fresca,5346,,
+Queijo,Frimesa,Parmesão,7017,,
+Queijo,Frimesa,Meia Lua,7022,,
+Queijo,Frimesa,Mussarela,7020,,
+Queijo,Frimesa,Prato,7021,,
+Queijo,Frimesa,Gorgonzola,7018,,
+Queijo,Frimesa,Coalho,7024,,
+Queijo,Lactopar,Coalho Especial c/ Orégano,5172,,
+Queijo,Lactopar,Coalho Especial,4953,,
+Queijo,Lactopar,Coalho Fracionado,6844,,
+Queijo,Lactopar,Minas Padrão Meia Lua,5176,,
+Queijo,Lactopar,Parmesão Fracionado,6878,,
+Queijo,Gorgonzola Quata,Gorgonzola,6956,,
+Queijo,Ipanema,Queijo Fresco (Minas Frescal),3090,,
+Apresuntado,Rezende,Apresuntado,2391,2392,3540
+Apresuntado,Perdigão,Apresuntado,6445,2161,3531
+Apresuntado,Alegra,Apresuntado,5541,5815,5812
+Apresuntado,Pamplona,Apresuntado,6274,6384,6390
+Apresuntado,Frimesa,Apresuntado,3773,3841,3940
+Apresuntado,Aurora,Apresuntado Branco,2211,2212,3537
+Apresuntado,Sadia,Apresuntado,2077,2078,3535
+Apresuntado,Seara,Apresuntado,2068,2269,3539
+Apresuntado,Peperi,Apresuntado,2213,2214,3538
+Apresuntado,Royal,Apresuntado Gourmet,24,,
+Apresuntado,Diversos,Afiambrado,33588,,
+Presunto,Sadia,Presunto,2395,2396,3513
+Presunto,Aurora,Presunto,5159,5227,5258
+Presunto,Perdigão,Presunto,6451,3962,3963
+Presunto,Royal,Presunto,1065,1063,
+Presunto,Pamplona,Presunto,5926,6386,6387
+Presunto,Seara,Presunto Cozido s/ Capa,2492,2493,3518
+Presunto,Rezende,Presunto,2709,2710,3521
+Presunto,Embu,Lombo Levíssimo (Presunto),8883,9237,9238
+Presunto,Frimesa,Presunto,2630,2631,2633
+Mortadela,Rezende,Mortadela,2627,2628,3597
+Mortadela,Marba,Mortadela Defumada,5944,5951,5968
+Mortadela,Sadia,Mortadela Defumada,4671,4680,4701
+Mortadela,Perdigão,Mortadela Tradicional,7172,7259,7347
+Mortadela,Seara,Mortadela Bexiga Defumada,6224,6231,6262
+Mortadela,Marba,Mortadela Italiana,3173,3201,3196
+Mortadela,Marba,Mortadela Bologna,2141,2142,3596
+Mortadela,Ceratti,Mortadela Bologna,5047,5075,5076
+Mortadela,Seara,Mortadela Bologna,6180,6610,6650
+Mortadela,Paulicéia,Mortadela Bologna,2137,2138,9520
+Mortadela,Perdigão,Mortadela Ouro,1010,1011,3571
+Mortadela,Aurora,Mortadela Defumada,8471,8488,8495
+Mortadela,Aurora,Mortadela Tradicional,8301,8481,8489
+Mortadela,Confiança,Mortadela Tubo,509,,
+Mortadela,Seara,Mortadela Bologna (tubo),618,,
+Mortadela,Seara,Mortadela Italiana (tipo Marba),3172,,
+Mortadela,Aurora,Mortadela Suína,2224,,
+Salame,Perdigão,Salame Italiano,2153,2154,
+Salame,Aurora,Salame Italiano,4072,40733,
+Salame,Ceratti,Salaminho,5482,5656,
+Salame,Seara,Salame Italiano,3679,3680,
+Salame,Pamplona,Salame Italiano,6283,6397,
+Salame,Nobre,Salame Italiano,2196,2197,
+Salame,Sadia,Salame Italiano,2181,2182,
+Salame,Aurora,Salame Hamburguês,,5694,
+Salame,Frimesa,Salame Italiano,3759,3810,
+Salame,Pamplona,Salaminho,6285,6404,
+Salame,Seara,Salame Hamburguês,,2846,
+Salame,Seara,Salaminho,12329,,
+Salame,Seara,Salame,12380,,
+Salame,Seara,Salaminho Italiano,5412,,
+Salame,Pamplona,Salaminho,6285,6404,
+Salame,Ceratti,Salame (variante 1),7222,9436,
+Salame,Ceratti,Salame (variante 2),7222,9840,
+Copa,Pamplona,Copa,6485,6678,
+Copa,Pamplona,Copa Lombo Recheado (temperada),1045,,
+Copa,Aurora,Copa Curada,4074,4085,
+Copa,Frimesa,Copa Lombo Fatiado,7592,,
+Copa,Diversos,Copa Curada,4074,,
+Peito de Frango/Peru,Ceratti,Peito de Frango Defumado,5056,5077,5078
+Peito de Frango/Peru,Jumirim,Palheta Defumada,7768,8477,
+Peito de Frango/Peru,Seara,Peito de Peru Defumado,3185,5014,5016
+Peito de Frango/Peru,Sadia,Peito de Peru Defumado,,1230,3551
+Peito de Frango/Peru,Perdigão,Peito de Peru Defumado,,1013,3566
+Peito de Frango/Peru,Seara,Lombo Temperado Canadense Defumado,750,7510,
+Peito de Frango/Peru,Aurora,Lombo (peru),,2221,
+Peito de Frango/Peru,Nobre,Lombo (peru),,2171,
+Peito de Frango/Peru,Seara,Finesse Peito de Peru,,1007,
+Peito de Frango/Peru,Ceratti,Salame Ceratti (peito de frango/peru),,9840,
+Peito de Frango/Peru,BRF,Blanquet de Peru,1231,,
+Peito de Frango/Peru,Sadia,Peito de Peru Defumado (D),1229,,
+Peito de Frango/Peru,Perdigão,Peito de Peru,1012,,
+Embutidos,Frimesa,Tender,10136,,
+Embutidos,Diversos,Tender Peru,3722,,
+Bacon,Seara,Bacon Pedaço,,,7583
+Bacon,Sadia,Bacon,2178,,
+Bacon,Perdigão,Bacon,2111,,
+Bacon,Alegra,Bacon Especial Pernil,6196,,
+Bacon,Alegra,Bacon,5542,,
+Bacon,Aurora,Bacon,2242,,
+Bacon,Aurora,Bacon Meia Peça,7174,,
+Bacon,Pamplona,Bacon Paleta Manta,4778,,
+Bacon,Pamplona,Bacon Paleta Especial,6444,,
+Bacon,Frimesa,Bacon,5084,,
+Bacon,Frimesa,Bacon Manta,3698,,
+Bacon,Frimesa,Bacon Paleta,152,,
+Bacon,Frimesa,Bacon Fracionado,4589,,
+Bacon,Frimesa,Bacon Paleta Fracionado,6519,,
+Bacon,Seara,Bacon Tablete,7379,,
+Bacon,Éder,Bacon Pedaço,,,6938
+Bacon,Alegra,Bacon Pernil,7640,,
+Suíno Fresco,Pamplona,Bisteca Suína Temperada,9379,,
+Suíno Fresco,Pamplona,Costela Suína Temperada,9324,,
+Suíno Fresco,Pamplona,Filé Mignon Suíno Temperado,9331,,
+Suíno Fresco,Pamplona,Lombo Suíno Temperado,9348,,
+Suíno Fresco,Pamplona,Panceta Suína Temperada,5405,,
+Suíno Fresco,Pamplona,Pernil c/ Osso Temperado,9355,,
+Suíno Fresco,Pamplona,Pernil s/ Osso Temperado,9362,,
+Suíno Fresco,Pamplona,Picanha Suína Temperada,9362,,
+Suíno Fresco,Pamplona,Sobrepaleta Suína Temperada,9386,,
+Suíno Fresco,Pamplona,Alcatra Suína Temperada,9393,,
+Suíno Fresco,Sadia,Bisteca,263,,
+Suíno Fresco,Aurora,Bisteca Congelada,1761,,
+Suíno Fresco,Aurora,Costela Congelada (caixa),8198,,
+Suíno Fresco,Aurora,Lombo Congelado,6620,,
+Suíno Fresco,Aurora,Panceta Congelada,5449,,
+Suíno Fresco,Aurora,Cupim Ancho Premium s/ Osso,5635,,
+Suíno Fresco,Aurora,Ribeye Premium s/ Osso,3791,,
+Suíno Fresco,Aurora,Filé Mignon Temperado,5525,,
+Suíno Fresco,Aurora,Carne Suína sem Osso (Mignon),6107,,
+Suíno Fresco,Frimesa,Costela,2641,,
+Suíno Fresco,Frimesa,Barriga,3146,,
+Suíno Fresco,Frimesa,Sobrepaleta,3143,,
+Suíno Fresco,Frimesa,Bisteca,5499,,
+Suíno Fresco,Frimesa,Pernil,3147,,
+Suíno Fresco,Frimesa,Coxão Mole,6318,,
+Suíno Fresco,Frimesa,Matambrito,9679,,
+Suíno Fresco,Frimesa,Alcatra,5655,,
+Suíno Fresco,Frimesa,Filé,3651,,
+Suíno Fresco,Frimesa,Picanha,3654,,
+Suíno Fresco,Frimesa,Pernil Temperado,5447,,
+Suíno Fresco,Frimesa,Lombo,4658,,
+Suíno Fresco,Seara,Barriga Congelada Reserva,7970,,
+Suíno Fresco,Seara,Costelinha Congelada Reserva,7971,,
+Suíno Fresco,Seara,Pernil Congelado Internacional c/ Osso Reserva,1378,,
+Suíno Fresco,Seara,Lombo Congelado Reserva,7885,,
+Suíno Fresco,Seara,Paleta Congelada Reserva,7886,,
+Suíno Fresco,Seara,Filé Mignon Congelado Reserva,7967,,
+Suíno Fresco,Seara,Costela Inteira Congelada,12383,,
+Suíno Salgado,Pamplona,Lombo/Pernil Salgado,1760,,
+Suíno Salgado,Pamplona,Costela Salgada,5892,,
+Suíno Salgado,Pamplona,Orelha Suína,5292,,
+Suíno Salgado,Pamplona,Pé Suíno,5290,,
+Suíno Salgado,Pamplona,Rabo Suíno,5293,,
+Suíno Salgado,Aurora,Costela Salgada,3206,,
+Suíno Salgado,Aurora,Orelha Salgada,3204,,
+Suíno Salgado,Aurora,Pé Salgado,3203,,
+Suíno Salgado,Aurora,Rabo Salgado,3205,,
+Suíno Salgado,Seara,Costela Salgada,9030,,
+Suíno Salgado,Seara,Pé Salgado,9064,,
+Suíno Salgado,Seara,Rabo Salgado,9023,,
+Suíno Salgado,Aurora,Lombo Temp. Canadense Defumado,22020,,
+Suíno Salgado,Nobre,Lombo Temp. Canadense Defumado,2170,,
+Suíno Salgado,Diversos,Papada Defumada,6681,,
+Suíno Salgado,Diversos,Torresmo de Rolo Premium,11418,,
+Frango,Copacol,Peito c/ Osso,3378,,
+Frango,Copacol,Coxa e Sobrecoxa,2834,,
+Frango,Copacol,Filé de Frango,2845,,
+Frango,Copacol,Asa de Frango,2832,,
+Frango,Gm,Peito (lar),5901,,
+Frango,Gm,Sassami (lar),4901,,
+Frango,Gm,Coxa com Sobrecoxa,7170,,
+Frango,Gm,Apresuntado Estrela,3358,,
+Frango,Itabom,Frango Congelado,3184,,
+Frango,Itabom,Frango Resfriado Inteiro,8824,,
+Frango,Itabom,Coxa Congelada,7210,,
+Frango,Itabom,Asa Congelada,3171,,
+Frango,Itabom,Coração Congelado,8816,,
+Frango,Itabom,Coxa e Sobrecoxa Congelada,3172,,
+Frango,Itabom,Fígado Congelado,8818,,
+Frango,Itabom,Filé de Peito Congelado,3170,,
+Frango,Itabom,Meio da Asa Congelada,7786,,
+Frango,Itabom,Moela Congelada,8817,,
+Frango,Itabom,Peito Congelado c/ Osso,3167,,
+Frango,Itabom,Sobrecoxa Congelada,7648,,
+Frango,Itabom,Coxinha da Asa Resfriada,10922,,
+Frango,Cvale,Coxa e Sobrecoxa,11594,,
+Frango,Cvale,Sassami,11635,,
+Frango,Cvale,Peito,11649,,
+Frango,Somave,Frango Congelado,3267,,
+Frango,Somave,Galinha,3266,,
+Frango,Canção,Coxa e Sobrecoxa c/ Dorso Congelada,11401,,
+Frango,Canção,Coxa e Sobrecoxa Congelada,1644,,
+Frango,Canção,Filé de Peito Congelado,2398,,
+Frango,Canção,Peito com Osso Congelado,1642,,
+Frango,Canção,Sassami Congelado,11413,,
+Frango,Flamboia,Frango Congelado,3242,,
+Frango,Seara,Frango Congelado sem Miúdos,3437,,
+Frango,Seara,Frango Congelado da Granja sem Miúdos,7204,,
+Frango,Seara,Frango Congelado para Padaria,9451,,
+Frango,Nhô Bento,Frango Congelado Caipira,3443,,
+Frango,Seara,Peito de Peru Defumado (carne de ave),3186,,
+Peru,Cação,Filé de Peito,2398,,
+Ovino,Seara,Carcaça Congelada,12373,,
+Linguiça,Frimesa,Linguiça 2 Gomos,5141,,
+Linguiça,Frimesa,Linguiça Toscana Fracionada,2917,,
+Linguiça,Frimesa,Calabresa Fracionada,4569,,
+Linguiça,Seara,Salsicha Hot Dog Resfriada,8346,,
+Embutidos,Frimesa,Paio,7681,,
+Embutidos,Frimesa,Matambrito,9679,,
+Embutidos,Frimesa,Salame Milano,4229,,
+Embutidos,BRF,Presunto Mignon,12328,,
