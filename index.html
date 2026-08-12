@@ -273,6 +273,30 @@
   #toast.show{ transform:translate(-50%,0); }
   #toast.error{ background:var(--danger); }
 
+  /* ---------- Barcode modal ---------- */
+  #barcodeModal{
+    padding:24px 20px 20px; max-width:340px;
+  }
+  .barcode-wrap{
+    background:#fff; border-radius:12px; padding:14px 8px;
+    display:flex; align-items:center; justify-content:center;
+    min-height:110px;
+  }
+  #barcodeSvg{ width:100%; height:auto; }
+  .mil-contra-btn{
+    width:100%; margin-top:16px;
+    padding:12px; border-radius:10px; border:1.5px solid var(--line);
+    background:var(--bg); color:var(--ink); font-weight:700; font-size:13.5px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .mil-contra-btn.active{
+    background:var(--accent); border-color:var(--accent); color:#fff;
+  }
+  .barcode-close-hint{
+    text-align:center; font-size:11.5px; color:var(--ink-sec);
+    margin-top:12px; font-weight:600;
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; }
   }
@@ -378,6 +402,16 @@
 
 <div id="toast"></div>
 
+<!-- Modal: código de barras (pressionar e segurar) -->
+<dialog id="barcodeModal">
+  <div class="barcode-wrap">
+    <svg id="barcodeSvg"></svg>
+  </div>
+  <button class="mil-contra-btn" id="milContraToggle" type="button">+ Mil Contra (0001)</button>
+  <div class="barcode-close-hint">Toque fora para fechar</div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
   const CSV_PATH = 'Dados.csv';
@@ -545,7 +579,7 @@
     `).join('');
 
     resultsEl.querySelectorAll('.digit-slot[data-code]').forEach(el => {
-      el.addEventListener('click', () => copyCode(el));
+      attachSlotHandlers(el);
     });
     resultsEl.querySelectorAll('[data-edit]').forEach(el => {
       el.addEventListener('click', () => openEditModal(Number(el.dataset.edit)));
@@ -581,6 +615,84 @@
       done();
     }
   }
+
+  // ---------------- Toque curto = copia · Pressionar e segurar = código de barras ----------------
+  const LONG_PRESS_MS = 450;
+  const MOVE_TOLERANCE = 10;
+
+  function attachSlotHandlers(el){
+    let pressTimer = null;
+    let longPressFired = false;
+    let startX = 0, startY = 0;
+
+    const clearTimer = () => { clearTimeout(pressTimer); pressTimer = null; };
+
+    el.addEventListener('pointerdown', (e) => {
+      longPressFired = false;
+      startX = e.clientX; startY = e.clientY;
+      pressTimer = setTimeout(() => {
+        longPressFired = true;
+        if(navigator.vibrate) navigator.vibrate(12);
+        openBarcodeModal(el.dataset.code);
+      }, LONG_PRESS_MS);
+    });
+    el.addEventListener('pointermove', (e) => {
+      if(pressTimer && (Math.abs(e.clientX - startX) > MOVE_TOLERANCE || Math.abs(e.clientY - startY) > MOVE_TOLERANCE)){
+        clearTimer();
+      }
+    });
+    el.addEventListener('pointerup', () => {
+      clearTimer();
+      if(!longPressFired){ copyCode(el); }
+    });
+    el.addEventListener('pointerleave', clearTimer);
+    el.addEventListener('pointercancel', clearTimer);
+    el.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  // ---------------- Modal de código de barras ----------------
+  const barcodeModal   = document.getElementById('barcodeModal');
+  const barcodeSvg     = document.getElementById('barcodeSvg');
+  const milContraBtn   = document.getElementById('milContraToggle');
+  let barcodeBaseCode  = '';
+  let milContraOn      = false;
+
+  function renderBarcode(){
+    const value = barcodeBaseCode + (milContraOn ? '0001' : '');
+    try{
+      JsBarcode(barcodeSvg, value, {
+        format: 'CODE128',
+        displayValue: true,
+        fontSize: 16,
+        textMargin: 4,
+        height: 70,
+        width: 2.2,
+        margin: 10,
+        background: '#ffffff',
+        lineColor: '#1b1f24'
+      });
+    } catch(e){ /* código inválido para barras, ignora silenciosamente */ }
+    milContraBtn.textContent = milContraOn ? 'Remover Mil Contra' : '+ Mil Contra (0001)';
+    milContraBtn.classList.toggle('active', milContraOn);
+  }
+
+  function openBarcodeModal(code){
+    barcodeBaseCode = code;
+    milContraOn = false;
+    renderBarcode();
+    barcodeModal.showModal();
+  }
+
+  milContraBtn.addEventListener('click', () => {
+    milContraOn = !milContraOn;
+    renderBarcode();
+  });
+
+  barcodeModal.addEventListener('click', (e) => {
+    const r = barcodeModal.getBoundingClientRect();
+    const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    if(!inside) barcodeModal.close();
+  });
 
   searchInput.addEventListener('input', (e) => renderResults(e.target.value));
 

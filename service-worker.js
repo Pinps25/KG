@@ -1,11 +1,12 @@
-const CACHE_NAME = 'pesagem-cache-v2';
+const CACHE_NAME = 'pesagem-cache-v3';
 
 const APP_SHELL = [
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js'
 ];
 
 // Instala e guarda o "esqueleto" do app em cache
