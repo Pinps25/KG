@@ -269,10 +269,11 @@
     background:var(--ink); color:#fff; padding:12px 20px;
     border-radius:12px; font-size:13.5px; font-weight:600;
     max-width:90%; text-align:center; z-index:60;
-    transition:transform .25s;
+    opacity:0; pointer-events:none;
+    transition:transform .25s, opacity .25s;
     box-shadow:0 8px 20px rgba(0,0,0,0.3);
   }
-  #toast.show{ transform:translate(-50%,0); }
+  #toast.show{ transform:translate(-50%,0); opacity:1; pointer-events:auto; }
   #toast.error{ background:var(--danger); }
 
   /* ---------- Barcode modal ---------- */
