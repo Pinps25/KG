@@ -464,6 +464,16 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // Alguns navegadores (modo privado/restrito) bloqueiam localStorage e lançam
+  // erro em vez de simplesmente não funcionar — essas funções evitam que isso
+  // trave o app, tratando como "sem token salvo" nesses casos.
+  function safeGetToken(){
+    try { return localStorage.getItem('gh_pat'); } catch(e) { return null; }
+  }
+  function safeSetToken(val){
+    try { localStorage.setItem('gh_pat', val); return true; } catch(e) { return false; }
+  }
+
   function showToast(msg, isError){
     toastEl.textContent = msg;
     toastEl.classList.toggle('error', !!isError);
@@ -621,14 +631,16 @@
 
   function copyCode(el){
     const code = el.dataset.code;
-    const done = () => {
+    const flashOk = () => {
       el.classList.add('flash');
       setTimeout(() => el.classList.remove('flash'), 700);
     };
     if(navigator.clipboard){
-      navigator.clipboard.writeText(code).then(done).catch(done);
+      navigator.clipboard.writeText(code).then(flashOk).catch(() => {
+        showToast('Não foi possível copiar. Segure o código pra ver o código de barras.', true);
+      });
     } else {
-      done();
+      showToast('Cópia automática não é suportada neste navegador.', true);
     }
   }
 
@@ -734,7 +746,13 @@
 
   document.getElementById('pwCancel').addEventListener('click', () => pwModal.close());
   document.getElementById('pwConfirm').addEventListener('click', async () => {
-    const hash = await sha256Hex(pwInput.value);
+    let hash;
+    try{
+      hash = await sha256Hex(pwInput.value);
+    } catch(e){
+      showToast('Não foi possível verificar a senha neste navegador (é necessário HTTPS).', true);
+      return;
+    }
     if(hash === PASSWORD_HASH){
       pwModal.close();
       unlockEditMode();
@@ -751,7 +769,7 @@
     editToggle.classList.add('unlocked');
     fabAdd.classList.add('visible');
     renderResults(searchInput.value);
-    if(!localStorage.getItem('gh_pat')){
+    if(!safeGetToken()){
       tokenInput.value = '';
       if(!tokenModal.open) tokenModal.showModal();
       tokenInput.focus();
@@ -762,7 +780,10 @@
   document.getElementById('tokenConfirm').addEventListener('click', () => {
     const val = tokenInput.value.trim();
     if(!val){ showToast('Cole um token válido.', true); return; }
-    localStorage.setItem('gh_pat', val);
+    if(!safeSetToken(val)){
+      showToast('Não consegui salvar o token neste navegador (modo privado?).', true);
+      return;
+    }
     tokenModal.close();
     showToast('Token salvo neste aparelho.');
   });
@@ -874,7 +895,7 @@
   function base64ToUtf8(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,'')))); }
 
   async function saveToGithub(action){
-    const token = localStorage.getItem('gh_pat');
+    const token = safeGetToken();
     if(!token){
       showToast('Nenhum token salvo. Toque no cadeado para configurar.', true);
       return;
@@ -972,6 +993,13 @@
   }
 
   loadData();
+
+  window.addEventListener('beforeunload', (e) => {
+    if(saveQueue.length > 0 || queueRunning){
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
 
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => {
