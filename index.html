@@ -483,13 +483,21 @@
 
   function loadData(){
     showState('Carregando', 'Buscando a biblioteca de códigos...');
-    Papa.parse(CSV_PATH, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: (h) => normalize(h).replace(/[^a-z0-9]/g, ''),
-      transform: (v) => (v || '').trim(),
-      complete: (res) => {
+    // Buscamos o texto nós mesmos (garante UTF-8 correto) em vez de deixar
+    // o modo "download" do PapaParse decidir a codificação sozinho —
+    // isso evitava acentos corrompidos (ex: "Perdigão" virando "PerdigÃ£o").
+    fetch(CSV_PATH)
+      .then(res => {
+        if(!res.ok) throw new Error('not found');
+        return res.text();
+      })
+      .then(text => {
+        const res = Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (h) => normalize(h).replace(/[^a-z0-9]/g, ''),
+          transform: (v) => (v || '').trim(),
+        });
         allItems = res.data
           .map((row, i) => ({
             id: i,
@@ -508,11 +516,10 @@
         }
         buildFilters();
         renderResults(searchInput.value);
-      },
-      error: () => {
+      })
+      .catch(() => {
         showState('Não encontrado', 'Não achei o arquivo <code>Dados.csv</code> na mesma pasta do index.html. Adicione-o ao repositório e recarregue a página.');
-      }
-    });
+      });
   }
 
   function buildFilters(){
@@ -529,7 +536,7 @@
       });
     });
     catList.innerHTML = [...new Set(allItems.map(i => i.categoria).filter(Boolean))]
-      .map(c => `<option value="${c}"></option>`).join('');
+      .map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
   }
 
   function matches(item, term){
@@ -798,6 +805,10 @@
     };
     if(!newItem.kg && !newItem.fatiado && !newItem.peca){
       showToast('Preencha ao menos um código (KG, Fatiado ou Peça).', true);
+      return;
+    }
+    if(!newItem.categoria || !newItem.fornecedor || !newItem.produto){
+      showToast('Categoria, fornecedor e produto não podem ficar em branco.', true);
       return;
     }
     const action = editingSnapshot
