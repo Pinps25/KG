@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesagem-cache-v6';
+const CACHE_NAME = 'pesagem-cache-v7';
 
 const APP_SHELL = [
   './index.html',
@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) => {
   if (url.includes('Dados.csv')) {
     const cacheKey = new Request(url.split('?')[0]);
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-store' })
         .then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, clone));
