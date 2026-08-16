@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesagem-cache-v9';
+const CACHE_NAME = 'pesagem-cache-v10';
 
 const APP_SHELL = [
   './index.html',

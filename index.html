@@ -41,7 +41,11 @@
     background:var(--bg);
     padding:16px 16px 12px;
     border-bottom:1px solid var(--line);
+    transform:translateY(0);
+    transition:transform .22s ease;
+    will-change:transform;
   }
+  header.hidden{ transform:translateY(-100%); }
   .brand{
     display:flex; align-items:center; gap:8px;
     max-width:720px; margin:0 auto 12px;
@@ -64,6 +68,8 @@
     -webkit-tap-highlight-color:transparent;
   }
   .lock-btn svg{ width:17px; height:17px; stroke:var(--ink-sec); }
+  .lock-btn.level1{ background:var(--accent); border-color:var(--accent); }
+  .lock-btn.level1 svg{ stroke:#fff; }
   .lock-btn.unlocked{ background:var(--ink); border-color:var(--ink); }
   .lock-btn.unlocked svg{ stroke:var(--display-fg); }
 
@@ -429,11 +435,13 @@
 
   let allItems = [];
   let activeCategory = 'Todos';
-  let editMode = false;
+  let securityLevel = 0; // 0=fechado · 1=senha (libera código de barras) · 2=senha+token (libera edição)
+  let editMode = false;  // atalho: true quando securityLevel === 2
   let editingSnapshot = null; // item original sendo editado (para localizar no CSV)
 
   const resultsEl    = document.getElementById('results');
   const filtersEl    = document.getElementById('filters');
+  const headerEl     = document.querySelector('header');
   const countRowEl   = document.getElementById('countRow');
   const countTextEl  = document.getElementById('countText');
   const editHintEl   = document.getElementById('editHint');
@@ -660,6 +668,10 @@
       startX = e.clientX; startY = e.clientY;
       pressTimer = setTimeout(() => {
         longPressFired = true;
+        if(securityLevel < 1){
+          showToast('Toque no cadeado e digite a senha pra usar o código de barras.', true);
+          return;
+        }
         if(navigator.vibrate) navigator.vibrate(12);
         openBarcodeModal(el.dataset.code);
       }, LONG_PRESS_MS);
@@ -732,11 +744,12 @@
   }
 
   editToggle.addEventListener('click', () => {
-    if(editMode){
-      editMode = false;
-      editToggle.classList.remove('unlocked');
-      fabAdd.classList.remove('visible');
-      renderResults(searchInput.value);
+    if(securityLevel === 2){
+      setSecurityLevel(0); // do nível máximo, um toque tranca tudo de novo
+      return;
+    }
+    if(securityLevel === 1){
+      escalateToLevel2();
       return;
     }
     pwInput.value = '';
@@ -755,7 +768,7 @@
     }
     if(hash === PASSWORD_HASH){
       pwModal.close();
-      unlockEditMode();
+      setSecurityLevel(1);
     } else {
       showToast('Senha incorreta.', true);
     }
@@ -764,16 +777,24 @@
     if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('pwConfirm').click(); }
   });
 
-  function unlockEditMode(){
-    editMode = true;
-    editToggle.classList.add('unlocked');
-    fabAdd.classList.add('visible');
-    renderResults(searchInput.value);
-    if(!safeGetToken()){
+  function escalateToLevel2(){
+    if(safeGetToken()){
+      setSecurityLevel(2);
+    } else {
       tokenInput.value = '';
       if(!tokenModal.open) tokenModal.showModal();
       tokenInput.focus();
     }
+  }
+
+  function setSecurityLevel(level){
+    securityLevel = level;
+    editMode = (level === 2);
+    editToggle.classList.remove('level1', 'unlocked');
+    if(level === 1) editToggle.classList.add('level1');
+    if(level === 2) editToggle.classList.add('unlocked');
+    fabAdd.classList.toggle('visible', level === 2);
+    renderResults(searchInput.value);
   }
 
   document.getElementById('tokenCancel').addEventListener('click', () => tokenModal.close());
@@ -785,6 +806,7 @@
       return;
     }
     tokenModal.close();
+    setSecurityLevel(2);
     showToast('Token salvo neste aparelho.');
   });
 
@@ -993,6 +1015,41 @@
   }
 
   loadData();
+
+  // Esconde a barra de busca ao rolar pra baixo (mais espaço pra lista);
+  // qualquer rolagem pra cima, mesmo pequena, já traz ela de volta.
+  (function(){
+    let lastY = window.scrollY;
+    let hidden = false;
+    let ticking = false;
+    const UP_THRESHOLD = 6;
+    const DOWN_THRESHOLD = 6;
+    const REVEAL_ZONE = 16; // perto do topo, sempre mostra
+
+    function onScroll(){
+      const y = window.scrollY;
+      const delta = y - lastY;
+
+      if(document.activeElement !== searchInput){
+        if(y <= REVEAL_ZONE){
+          if(hidden){ headerEl.classList.remove('hidden'); hidden = false; }
+        } else if(delta > DOWN_THRESHOLD && !hidden){
+          headerEl.classList.add('hidden'); hidden = true;
+        } else if(delta < -UP_THRESHOLD && hidden){
+          headerEl.classList.remove('hidden'); hidden = false;
+        }
+      }
+      lastY = y;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if(!ticking){
+        requestAnimationFrame(onScroll);
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
 
   window.addEventListener('beforeunload', (e) => {
     if(saveQueue.length > 0 || queueRunning){
